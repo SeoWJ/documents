@@ -64,3 +64,23 @@ __언더바__<br>
 
 ---
 
+## 인라인 코드
+
+문단 중간에 `Code` 삽입 가능.
+예를 들자면 `System.out.println("Hello, World");` 이렇게 들어간다
+
+---
+
+## 코드 블럭
+
+코드 블럭도 생성이 가능
+```
+public static void main(String[] args){
+    System.out.println("Hello, World!");
+    
+    return 0;
+}
+```
+이렇게 들어간다.
+
+---
