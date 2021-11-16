@@ -111,7 +111,7 @@
 
 ### 21 ~ 26.
 
-- kubectl get pods : 팟 정보 출력
+- ```kubectl get pods``` : 팟 정보 출력
 - kubectl run <컨테이너명> --image=<이미지명> : 이미지를 사용하여 컨테이너 생성
 - kubectl get pods -o wide : 팟정보 상세 출력
 - kubectl delete <팟이름>/<컨테이너명> : 팟 내부의 컨테이너 삭제
