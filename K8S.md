@@ -134,3 +134,14 @@
 - kubectl get deployments
 - kubectl get all : 모든것을 다 출력.
 
+### 34 ~ 36. namespace
+
+- 동일 네임스페이스 내에서는 이름만으로 호출할 수 있다.
+- 타 네임스페이스의 요소를 사용하고자 할 때에는 정해진 양식을 따라야 한다. 이름.네임스페이스.svc.cluster.local // cluster.local -> 도메인 네임. Svc -> 서비스의 서브 도메인
+- kubectl get pods : 디폴트 네임스페이스의 팟들을 불러옴
+- kubectl get pods --namespace=kube-system : kube-system 네임스페이스 안의 팟들을 불러옴
+- 팟 등을 생성하는 명령어를 사용할 때 kubectl create -f <yaml파일> --namespace=<네임스페이스명>
+- yaml파일 안에 네임스페이스를 명시하고자 할 경우 metadata: 아랫단에 작성
+- kubectl config set-context $(cubectl config current-context) --namespace=dev : dev를 기본 네임스페이스로 변경
+- kubectl get pods --all-namespaces : 모든네임스페이스의 팟을 불러온다.
+
