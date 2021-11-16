@@ -125,3 +125,12 @@
 - kubectl delete replacaset <레플리카명> : 레플리카 제거
 - kubectl edit replicaset/<레플리카명> : 현재 적용중인 레플리카 정보를 yaml파일 형식으로 만들어서 불러와서 연다. 수정시 수정한 부분 적용. 현재 돌고있는 팟에는 적용이 안되므로 팟은 제거해줄것.
 - kubectl scale replicaset/new-replica-set --replicas=5 : 레플리카 개수 조정
+
+### 30 ~ 32. Deployment
+
+- 애플리케이션을 업데이트 할 경우, 한꺼번에 업데이트 하는 것 보다 순차적으로 하나씩 바꾸어가는것이 좋음. 쿠버네티스는 이것을 지원.
+- 문제가 생길 경우 롤백 가능
+- kubectl create –f <yaml파일> : deployment 생성.
+- kubectl get deployments
+- kubectl get all : 모든것을 다 출력.
+
