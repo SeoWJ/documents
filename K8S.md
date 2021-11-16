@@ -115,3 +115,13 @@
 - kubectl run <컨테이너명> --image=<이미지명> : 이미지를 사용하여 컨테이너 생성
 - kubectl get pods -o wide : 팟정보 상세 출력
 - kubectl delete <팟이름>/<컨테이너명> : 팟 내부의 컨테이너 삭제
+- kubectl describe pods : 팟들의 세부정보 출력
+
+### 27 ~ 28.
+
+- kubectl get replica : 레플리카 정보출력
+- kubectl describe replica : 레플리카 상세정보 출력
+- kubectl create -f <yaml파일> : 레플리카 생성
+- kubectl delete replacaset <레플리카명> : 레플리카 제거
+- kubectl edit replicaset/<레플리카명> : 현재 적용중인 레플리카 정보를 yaml파일 형식으로 만들어서 불러와서 연다. 수정시 수정한 부분 적용. 현재 돌고있는 팟에는 적용이 안되므로 팟은 제거해줄것.
+- kubectl scale replicaset/new-replica-set --replicas=5 : 레플리카 개수 조정
