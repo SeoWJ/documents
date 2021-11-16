@@ -111,37 +111,47 @@
 
 ### 21 ~ 26.
 
-- ```kubectl get pods``` : 팟 정보 출력
-- kubectl run <컨테이너명> --image=<이미지명> : 이미지를 사용하여 컨테이너 생성
-- kubectl get pods -o wide : 팟정보 상세 출력
-- kubectl delete <팟이름>/<컨테이너명> : 팟 내부의 컨테이너 삭제
-- kubectl describe pods : 팟들의 세부정보 출력
+```
+kubectl get pods : 팟 정보 출력
+kubectl run <컨테이너명> --image=<이미지명> : 이미지를 사용하여 컨테이너 생성
+kubectl get pods -o wide : 팟정보 상세 출력
+kubectl delete <팟이름>/<컨테이너명> : 팟 내부의 컨테이너 삭제
+kubectl describe pods : 팟들의 세부정보 출력
+```
 
 ### 27 ~ 28.
 
-- kubectl get replica : 레플리카 정보출력
-- kubectl describe replica : 레플리카 상세정보 출력
-- kubectl create -f <yaml파일> : 레플리카 생성
-- kubectl delete replacaset <레플리카명> : 레플리카 제거
-- kubectl edit replicaset/<레플리카명> : 현재 적용중인 레플리카 정보를 yaml파일 형식으로 만들어서 불러와서 연다. 수정시 수정한 부분 적용. 현재 돌고있는 팟에는 적용이 안되므로 팟은 제거해줄것.
-- kubectl scale replicaset/new-replica-set --replicas=5 : 레플리카 개수 조정
+```
+kubectl get replica : 레플리카 정보출력
+kubectl describe replica : 레플리카 상세정보 출력
+kubectl create -f <yaml파일> : 레플리카 생성
+kubectl delete replacaset <레플리카명> : 레플리카 제거
+kubectl edit replicaset/<레플리카명> : 현재 적용중인 레플리카 정보를 yaml파일 형식으로 만들어서 불러와서 연다. 수정시 수정한 부분 적용. 현재 돌고있는 팟에는 적용이 안되므로 팟은 제거해줄것.
+kubectl scale replicaset/new-replica-set --replicas=5 : 레플리카 개수 조정
+```
 
 ### 30 ~ 32. Deployment
 
 - 애플리케이션을 업데이트 할 경우, 한꺼번에 업데이트 하는 것 보다 순차적으로 하나씩 바꾸어가는것이 좋음. 쿠버네티스는 이것을 지원.
 - 문제가 생길 경우 롤백 가능
-- kubectl create –f <yaml파일> : deployment 생성.
-- kubectl get deployments
-- kubectl get all : 모든것을 다 출력.
+
+```
+kubectl create –f <yaml파일> : deployment 생성.
+kubectl get deployments
+kubectl get all : 모든것을 다 출력.
+```
 
 ### 34 ~ 36. namespace
 
 - 동일 네임스페이스 내에서는 이름만으로 호출할 수 있다.
 - 타 네임스페이스의 요소를 사용하고자 할 때에는 정해진 양식을 따라야 한다. 이름.네임스페이스.svc.cluster.local // cluster.local -> 도메인 네임. Svc -> 서비스의 서브 도메인
-- kubectl get pods : 디폴트 네임스페이스의 팟들을 불러옴
-- kubectl get pods --namespace=kube-system : kube-system 네임스페이스 안의 팟들을 불러옴
-- 팟 등을 생성하는 명령어를 사용할 때 kubectl create -f <yaml파일> --namespace=<네임스페이스명>
+
+```
+kubectl get pods : 디폴트 네임스페이스의 팟들을 불러옴
+kubectl get pods --namespace=kube-system : kube-system 네임스페이스 안의 팟들을 불러옴
+kubectl create -f <yaml파일> --namespace=<네임스페이스명> : 팟 등을 생성하는 명령어를 사용할 때 
+kubectl config set-context $(cubectl config current-context) --namespace=dev : dev를 기본 네임스페이스로 변경
+kubectl get pods --all-namespaces : 모든네임스페이스의 팟을 불러온다.
+```
 - yaml파일 안에 네임스페이스를 명시하고자 할 경우 metadata: 아랫단에 작성
-- kubectl config set-context $(cubectl config current-context) --namespace=dev : dev를 기본 네임스페이스로 변경
-- kubectl get pods --all-namespaces : 모든네임스페이스의 팟을 불러온다.
 
