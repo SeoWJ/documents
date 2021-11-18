@@ -117,6 +117,7 @@ kubectl run <컨테이너명> --image=<이미지명> : 이미지를 사용하여
 kubectl get pods -o wide : 팟정보 상세 출력
 kubectl delete <팟이름>/<컨테이너명> : 팟 내부의 컨테이너 삭제
 kubectl describe pods : 팟들의 세부정보 출력
+kubectl run <컨테이너명> --port=<포트 넘버> : 컨테이너 생성 후 포트 
 ```
 
 ### 27 ~ 28.
@@ -139,6 +140,7 @@ kubectl scale replicaset/new-replica-set --replicas=5 : 레플리카 개수 조�
 kubectl create –f <yaml파일> : deployment 생성.
 kubectl get deployments
 kubectl get all : 모든것을 다 출력.
+kubectl create deployment <디플로이 이름> --image=<이미지 이름> --replicas=<레플리카 숫자>
 ```
 
 ### 34 ~ 36. namespace
@@ -149,6 +151,7 @@ kubectl get all : 모든것을 다 출력.
 ```
 kubectl get pods : 디폴트 네임스페이스의 팟들을 불러옴
 kubectl get pods --namespace=kube-system : kube-system 네임스페이스 안의 팟들을 불러옴
+kubectl create namespace <네임스페이스 명> : 네임스페이스 생성
 kubectl create -f <yaml파일> --namespace=<네임스페이스명> : 팟 등을 생성하는 명령어를 사용할 때 
 kubectl config set-context $(cubectl config current-context) --namespace=dev : dev를 기본 네임스페이스로 변경
 kubectl get pods --all-namespaces : 모든네임스페이스의 팟을 불러온다.
@@ -210,6 +213,7 @@ spec:
 		app: myapp
 		type: back-end
 ```
+- `kubectl run httpd --image=httpd:alpine --port=80 --expose` 팟을 생성하면서 동시에 80번 포트를 개방하고 클러스터ip에 연결
 
 #### Load Balancer
 
@@ -232,4 +236,22 @@ spec:
 		app: myapp
 		type: front-end
 ```
+
+### 42 ~ 45. Imperative vs Declarative
+
+- imperative : 스텝 바이 스텝으로 하나하나 지정하고 커맨드 날려서 설정하는 방식
+- declarative : IaC와 유사한 개념
+- yaml파일 경우 create, update, replacement 명령어로 적용할 경우 imperative이다. 기존에 중복된 이름이 있으면 실패할 것이고, 리플레이스도 기존의 것이 없다면 실패하는 등의 문제가 발생하기 때문이다. 그러나 apply로 적용할 경우 declarative이다. 알아서 설정하고 적용하기 때문이다. 업데이트가 필요할 경우에도 apply로 적용한다면 기존에 오브젝트가 있는 것을 스스로 파악하여 업데이트를 진행한다.
+
+### Tip
+- --dry-run : 커맨드를 테스트하는 경우 사용. `--dry-run=client` 옵션을 줄 경우 실제로 리소스를 만들지 않고 리소스가 생성가능한지, 커맨드가 맞았는지를 출력해준다.
+- -o yaml : yaml포맷을 스크린에 띄워준다.
+
+- `kubectl run nginx --image=nginx` nginx팟 생성
+- `kubectl run nginx –image=nginx --dry-run=client –o yaml` 팟을 정의하는 yaml 파일 생성
+- `kubectl create deployment --image=nginx nginx` nginx deployment 생성
+- `kubectl create deployment --image=nginx nginx --dry-run=client -o yaml` deployment yaml파일 생성.
+- `kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-deployment.yaml` nginx-deployment.yaml 파일을 만들고 저장.
+- `kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml` or `kubectl create service clusterip redis --tcp=6379:6379 --dry-run=client -o yaml` 서비스 생성 및 6379포트 사용 설정
+- `kubectl expose pod nginx --type=NodePort --port=80 --name=nginx-service --dry-run=clinet -o yaml` or `kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run=client -o yaml` NodePort 생성 및 nginx port 80을 포트 30080에 연결
 
