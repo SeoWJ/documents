@@ -157,4 +157,79 @@ kubectl get pods --all-namespaces : 모든네임스페이스의 팟을 불러온
 
 ### 37 ~ 40. Services
 
-- 쿠버네티스에서의 서비스란 하나의 팟과 같은 개념으로, 노드 위에서 웹 어플리케이션의 포트 to 포트 리퀘스트를 연결해주는 역할을 한다.
+- 쿠버네티스에서의 서비스란 팟, 레플리카셋, 디플로이와 같은 하나의 오브젝트다.
+- 노드 위에서 웹 어플리케이션의 포트 to 포트 리퀘스트를 연결해주는 역할을 한다.
+- 서비스는 세가지 타입이 존재
+	- NodePort : 인터널 팟을 노드의 포트에서 접속가능하도록 한다.
+	- Cluster IP : 클러스터 내부에 가상IP를 생성하여 서로 다른 서비스간 통신이 가능하도록 한다.
+	- Load Balancer
+
+```
+kubectl create –f <yaml파일명> : 서비스 생성
+kubectl get services : 정보확인
+```
+
+#### NodePort
+```
+NodePort YAML 예시
+
+apiVersion: v1
+kind: Service
+metadata:
+	name: myapp-service
+spec:
+	type: NodePort
+	ports:
+		- targetPort: 80
+		port: 80
+		nodePort: 30008
+	selector:
+		app: myapp
+		type: front-end
+```
+- 만일 하나의 노드에 selector항목이 동일한 여러 개의 팟이 존재한다면, 서비스는 자동으로 모두를 연결하여 사용한다.
+- 부하분산은 랜덤 알고리즘으로 사용.
+
+#### Cluster IP
+
+- 웹 어플리케이션을 사용할 경우 WEB, WAS, DB간의 연결이 필요하다. 이런 경우 사용 가능.
+- 내부 팟들의 경우 IP주소가 고정되어 있지 않다. 문제가 생겨 꺼지고 새로 생성되는 경우 주소가 변동.
+- 동일한 종류의 팟끼리 그룹화하여 하나의 인터페이스로 만들고 통신할 경우 랜덤하게 배정.
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+	name: back-end
+spec:
+	type: ClusterIP
+	ports:
+		- targetPort: 80
+		port: 80
+	selector:
+		app: myapp
+		type: back-end
+```
+
+#### Load Balancer
+
+- 프론트단에서 로드밸런싱을 하기 위해 사용
+- 유저들은 하나의 URL을 원하나 여러 개의 노드를 사용하면 주소가 다 다를수밖에 없음. 이를 해결하기 위해 사용
+- 몇몇 로드밸런서를 지원하는 클라우드 플랫폼에서만 사용가능
+- 지원하지 않는 VMWare등에서 사용하는 경우 NodePort와 동일하게 기능함.
+```
+apiVersion: v1
+kind: Service
+metadata:
+	name: myapp-service
+spec:
+	type: LoadBalancer
+	ports:
+		- targetPort: 80
+		port: 80
+		nodePort: 30008
+	selector:
+		app: myapp
+		type: front-end
+```
+
