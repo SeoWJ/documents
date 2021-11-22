@@ -255,3 +255,8 @@ spec:
 - `kubectl expose pod redis --port=6379 --name redis-service --dry-run=client -o yaml` or `kubectl create service clusterip redis --tcp=6379:6379 --dry-run=client -o yaml` 서비스 생성 및 6379포트 사용 설정
 - `kubectl expose pod nginx --type=NodePort --port=80 --name=nginx-service --dry-run=clinet -o yaml` or `kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run=client -o yaml` NodePort 생성 및 nginx port 80을 포트 30080에 연결
 
+---
+
+## Section 3 : Scheduling
+
+### 
