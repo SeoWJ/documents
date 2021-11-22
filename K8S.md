@@ -313,3 +313,32 @@ spec:
 					name: simple-webapp
 					image: simple-webapp
 	```
+
+### 56 ~ 58. Taints and Tolerations
+
+- Taint는 노드가 특정한 팟만을 올릴수 있도록 설정하는 것이다.
+- Toleration은 Taint가 설정된 노드에 맞는 설정을 갖는것이다. Toleration이 맞는 팟 만이 Taint가 설정된 노드 위에서 동작할 수 있다.
+- `kubectl taint nodes <node이름> key=value:taint-effect` Taint 설정 명령어
+- Taint에는 3가지 종류가 존재
+    - NoSchedule : 팟들이 노드 위에 스케줄링 되지 않는다.
+    - PreferNoSchedule : 팟들을 해당 노드 위에 스케줄링 하지 않도록 노력하는 것. 보장되지는 않는다.
+    - NoExecute : 팟들이 노드 위로 스케줄링 되지 않으며, 기존에 존재하던 팟들이 Tolerate하지 않을 경우 evict된다.
+- `kubectl taint nodes <node이름> <key명>=<value명>:NoSchedule`
+- 팟에 Toleration을 부여하는 yaml 예시
+    ```
+    apiVersion: v1
+    kind: Pod
+    metadata:
+        name: myapp-pod
+    spec:
+        containers:
+        - name: nginx-container
+        image: nginx
+    tolerations:
+        - key: <key명>
+        operator: "Equal"
+        value: <value명>
+        effect: NoSchedule
+    ```
+- K8S는 마스터 노드에는 팟들을 스케줄링 하지 않는다
+- `kubectl taint nodes <Node명> <taint명>-` Taint 제거 명령어
