@@ -266,3 +266,50 @@ spec:
 - 만일 스케줄러가 없다면, 팟들은 영원히 Pending 상태로 존재할 것.
 
 
+### 53 ~ 55. Labels & Selectors
+
+- Label은 오브젝트들을 그룹화하기 위한 수단.
+- 그룹내에 특징을 추가해 줄 수 있다.
+- Selector는 그룹들 내에서 필터링을 해 주는 기능이다.
+- label yaml파일 예시
+```
+apiVersion: v1
+kind: Pod
+metadata:
+	name: simple-webapp
+	labels:
+		app: App1
+		function: Front-end
+spec:
+	containers:
+		- name: simple-webapp
+		image: simple-webapp
+		ports:
+			- containerPort: 8080
+```
+- 라벨은 너의 필요에 따라 니 맘대로 몇개든 추가해 줄 수 있다.
+- `kubectl get pods --selector app=App1` 셀렉터 사용법 예시
+- ReplicaSet의 yaml 파일에서는 labels: 부분이 metadata 아래, spec: - template: - metadata: 아래 총 두군데 위치해야 한다.
+	```
+	apiVersion: apps/v1
+	kind: ReplicaSet
+	metadata:
+		name: simple-webapp
+		labels:
+			app: App1
+			function: Front-end
+	spec:
+		replicas: 3
+		selector:
+			matchLabels:
+				app: App1
+		template:
+			metadata:
+				labels:
+					app: App1
+					functions: Front-end
+			spec:
+				containers:
+					name: simple-webapp
+					image: simple-webapp
+	```
