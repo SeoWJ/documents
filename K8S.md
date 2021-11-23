@@ -391,3 +391,24 @@ spec:
 - 따라서 이 둘을 섞어서 쓰면 원하는 바를 완벽히 만들 수 있다.
 
 ### 64 ~ 68. Resource Requirements and Limits
+
+- 스케줄러는 팟들을 노드에 자동적으로 배정한다.
+- 모든 노드에 사용가능한 리소스가 부족한 경우, 쿠버네티스는 해당 팟에 대한 스케줄링을 대기한다(Pending State).
+- 팟이 얼마만큼의 자원을 사용할지를 스케줄러에 전달해야 하는데, 이는 yaml파일의 spec: 하단에 resources부분으로 명시할 수 있다.
+- 쿠버네티스는 노드에다가 하나의 팟에 얼마 이상의 자원을 할당하지 말라고 Limit을 걸 수도 있다.
+	```
+	spec:
+		containers:
+			- name: simple-webapp
+			image: simple-webapp
+			ports:
+				- containerPort: 8080
+			resources:
+				requests:
+					memory: "1Gi"
+					cpu: 1
+				limits:
+					memory: "2Gi"
+					cpu: 2
+	```
+- 만일 팟들이 지정된 리밋을 넘어서 자원을 사용하려 한다면 팟은 종료된다.
