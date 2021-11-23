@@ -318,12 +318,11 @@ spec:
 
 - Taint는 노드가 특정한 팟만을 올릴수 있도록 설정하는 것이다.
 - Toleration은 Taint가 설정된 노드에 맞는 설정을 갖는것이다. Toleration이 맞는 팟 만이 Taint가 설정된 노드 위에서 동작할 수 있다.
-- `kubectl taint nodes <node이름> key=value:taint-effect` Taint 설정 명령어
+- `kubectl taint nodes <node이름> <key명>=<value명>:NoSchedule` Taint 설정 명령어
 - Taint에는 3가지 종류가 존재
     - NoSchedule : 팟들이 노드 위에 스케줄링 되지 않는다.
     - PreferNoSchedule : 팟들을 해당 노드 위에 스케줄링 하지 않도록 노력하는 것. 보장되지는 않는다.
     - NoExecute : 팟들이 노드 위로 스케줄링 되지 않으며, 기존에 존재하던 팟들이 Tolerate하지 않을 경우 evict된다.
-- `kubectl taint nodes <node이름> <key명>=<value명>:NoSchedule`
 - 팟에 Toleration을 부여하는 yaml 예시
     ```
     apiVersion: v1
@@ -342,3 +341,49 @@ spec:
     ```
 - K8S는 마스터 노드에는 팟들을 스케줄링 하지 않는다
 - `kubectl taint nodes <Node명> <taint명>-` Taint 제거 명령어
+
+### 59 ~ 62. Node Selectors, Node Affinity
+
+- 팟에서 고사양 작업을 할 경우 어느정도 스펙이 되는 노드 위에서만 작동해야 하는 제한사항이 발생하는 경우가 있다. 이러한 경우 해결 방법에는 두 가지가 존재.
+	- Node Selector를 사용하는 방식
+		- spec: 부분에 nodeSelector:를 추가하여 준다.
+			```
+			spec:
+				containers:
+						- name: data-processor
+						image: data-processor
+				nodeSelector:
+					size: Large
+			```
+		- size: Large? : Key-value의 value를 넣어준 것으로서 노드를 생성할 때 이 key-value를 정해주어야 한다.
+			- `kubectl label nodes/<node 이름> <label-key>=<label-value>`
+			- ex) `kubectl label nodes/node-1 size=Large`
+		- 노드에 요구하는 사양이 복잡해지면 이 방식으로는 해결하기 힘듦.
+	- Node Affinity를 사용하는 방식
+		```
+		spec:
+			containers:
+				- name: data-processor
+				image: data-processor
+			affinity:
+				nodeAffinity:
+					requiredDuringSchedulingIgnoredDuringExecution:
+						nodeSelectorTerms:
+							- matchExpressions:
+								- key: size
+								operator: In
+								values:
+									- Large
+		```
+			- matchExpression 내의 operator
+				- In : values 목록들 중 하나에 팟이 생성됨
+				- NotIn : values 목록에 있는 노드에는 팟이 생성되지 않음.
+				- Exists : key-value 라벨이 붙어있으면 팟이 생성될 수 있음. 없다면 생성되지 않음. values목록이 필요하지 않다.
+		- Node Affinity Types
+			- requriedDuringSchedulingIgnoredDuringExecution
+			- preferedDuringSchedulingIngnoredDuringExecution
+			- 조건에 맞는 노드가 없는 경우 required는 배정하지 않지만 prefered는 무시하고 다른데 배정한다.
+			
+
+	
+		
