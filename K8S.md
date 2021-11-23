@@ -383,7 +383,11 @@ spec:
 			- requriedDuringSchedulingIgnoredDuringExecution
 			- preferedDuringSchedulingIngnoredDuringExecution
 			- 조건에 맞는 노드가 없는 경우 required는 배정하지 않지만 prefered는 무시하고 다른데 배정한다.
-			
 
-	
-		
+### 63. Node Affinity VS Taints and Tolerations
+
+- Taints and Tolerations은 팟이 타겟노드로 들어가는것을 보장해 주지 않는다. Taints가 없는 노드로 팟이 들어갈 수 있음.
+- Node Affinity는 팟이 타겟노드로 들어가는것은 보장하나, 타겟노드로 다른팟이 들어오는것을 막을 수 없음.
+- 따라서 이 둘을 섞어서 쓰면 원하는 바를 완벽히 만들 수 있다.
+
+### 64 ~ 68. Resource Requirements and Limits
