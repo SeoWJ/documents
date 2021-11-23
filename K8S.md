@@ -375,10 +375,10 @@ spec:
 								values:
 									- Large
 		```
-			- matchExpression 내의 operator
-				- In : values 목록들 중 하나에 팟이 생성됨
-				- NotIn : values 목록에 있는 노드에는 팟이 생성되지 않음.
-				- Exists : key-value 라벨이 붙어있으면 팟이 생성될 수 있음. 없다면 생성되지 않음. values목록이 필요하지 않다.
+		- matchExpression 내의 operator
+			- In : values 목록들 중 하나에 팟이 생성됨
+			- NotIn : values 목록에 있는 노드에는 팟이 생성되지 않음.
+			- Exists : key-value 라벨이 붙어있으면 팟이 생성될 수 있음. 없다면 생성되지 않음. values목록이 필요하지 않다.
 		- Node Affinity Types
 			- requriedDuringSchedulingIgnoredDuringExecution
 			- preferedDuringSchedulingIngnoredDuringExecution
