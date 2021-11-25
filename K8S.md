@@ -412,3 +412,30 @@ spec:
 					cpu: 2
 	```
 - 만일 팟들이 지정된 리밋을 넘어서 자원을 사용하려 한다면 팟은 종료된다.
+
+### 69 ~ 71. DaemonSets
+
+- DaemonSet은 모든 노드에 반드시 지정된 팟의 복사본이 하나씩은 존재하도록 보장하는 것.(모니터링 에이전트나 로그 컬렉터 등에 사용)
+- cube-proxy가 DaemonSet을 이용하여 배포된다.
+- DaemonSet yaml 예시
+	```
+	apiVersion: apps/v1
+	kind: DaemonSet
+	metadata:
+		name: monitoring-daemon
+	spec:
+		selector:
+			matchLabels:
+				app: monitoring-agent
+		template:
+			metadata:
+				labels:
+					app: monitoring-agent
+			spec:
+				continers:
+					- name: monitoring-agent
+					image: monitoring-agent
+	```
+- `kubectl get daemonsets`
+- `kubectl describe daemonsets/<DaemonSet 이름>`
+- `kubectl create deployment <DaemonSet name> (-n <namespace name>) --image=<image name> --dry-run=client -o yaml > <yaml file name>.yaml` 로 생성해서 yaml파일 얻을 것. create daemonset은 존재하지 않음.
