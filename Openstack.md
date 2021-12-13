@@ -2,8 +2,9 @@
 
 - 김주효 강사 / juhyokim@nobreak.co.kr
 - RedHat Openstack 16 version
+- RHCSA 자격증이 있어야 오픈스택 자격증 취득 가능.
 
-## Day. 01
+## Chapter 0. 환경
 
 ### 인프라 환경 구성요소
 - P9 장표 참조
@@ -35,3 +36,95 @@
 - 인터널, 테넌트(프로젝트) : 컴퓨트에만 연결되어 있음.
 - 스토리지 매니지먼트 : 컴퓨트와 스토리지에만 연결되어 있음.
 - 매니지먼트 : 전부다
+
+### 오픈스택 부팅
+- director 환경에서
+    - `source ~/overcloudrc` : 오버클라우드 환경으로 변경
+    - `source stackrc` : 언더클라우드 환경으로 변경
+    - `openstack compute service list`  : 활성화 된 서비스 리스트 출력
+    - `openstack baremetal node list` : 컨트롤러 컴퓨트 셰프 시스템에 대해 부팅상태 확인 가능
+    - `openstack baremetal node power on <이름>` : 부팅을 해주는 명령어. 부팅할때 IPMI를 통해서 부팅 명령어 전달
+    - `ssh controller0` : 컨트롤러 접속
+    - `sudo pcs cluster start --all` : PCS명령어로 클러스터를 활성화 하겠다. 컨트롤러 최초 부팅후에는 클러스터부터 활성화해야함
+    - `sudo podman ps` : 실행된 컨테이너 목록 확인. ceph-mon-controller0에서 작업 해야 한다.
+    - `sudo -i`로 루트 변환후 `podman exec chep-mon-controller0 ceph osd unset noout` : 컨테이너 내부에 뒤의 명령어 전달
+    - `ceph ost unset XXX` : 셰프 클러스터 명령어들 플래그들 비활성화. 오브젝트 스토리지 기반으로 백업등의 기능이 동작하게 되어있다. 정상 종료시에는 저걸 다 비활성화 해야함.
+        - noout
+        - norecover
+        - norebalance
+        - nobackfill
+        - nodown
+        - pause
+    - exit두번 진행하여 루트에서 빠져나가고 디렉터로 다시 돌아와서 undercloud환경에서 `openstack baremetal node power on compute0/compute1` : vm부팅.
+    - 마지막으로 키오스크로 나가서 `rht-vmctl start all` : 아침에 오면 매일 이걸 해줘야 한다.
+
+    - 순서대로 정리하자면,
+        - director power
+        - director에서 ceph 부팅
+        - director에서 controller 부팅
+        - 이 두가지 시스템은 부팅 순서 무관. 둘다 부팅된 이후 클러스터 활성화
+        - ceph스토리지에 대한 플래그 설정
+        - director에서 컴퓨트 실행
+    - 종료할때는 역순. 플래그 설정할 때는 unset을 set으로 적용하면 된다.
+
+    - `rht-vmctl XXX`
+        - start : 부팅할 때 사용. 아침에 부팅할 때
+        - reset : 잘못설정하거나 할 때 리셋. 현재상태로 되돌아간다. all을 추가로 입력하면 전체선택. undercloud, overcloud등으로 그룹적용도 가능하다.
+
+### lab. 실습/연습 환경 제공
+- ssh student@workstation에 접속하여 입력한다.
+- `lab XXX start`
+    - start : 시작
+    - grade : 채점할때.
+    - finish : 실습한 내용 제거
+
+
+## Chapter 1. Red Hat Openstack Platform 소개
+
+### 가상 사용자
+- P3 장표 참조.
+- 가상 사용자 : 인프라 환경을 접하는 우리를 의미. 엔지니어, 운영자, 개발자, 일반 사용자 모두를 포함.
+- 우리가 진행하는 이 과정의 주요 대상은 Domain Operator 기준으로 많이 설명되어 있다.
+- 제일 가운데, 로우레벨에 있는 사람들이 데이터센터를 관리하는 사람. 그 다음으로 물리적인 인프라를 관리하는 사람. 우리는 이 영역은 다루지 않는다.
+- Domain Operator : 구성되어있는 오픈스택 환경을 운영하는 사람들.
+    - 프로젝트(작업 단위. 내가 사용하려는 리소스들의 그룹을 의미. 옛날 용어로 Tenent) 생성 및 관리.
+    - 사용자 및 사용자 역할 할당.
+    - 도메인에서 리소스와 기타 작업 관리.
+        - 도메인이 상위개념. 도메인이 클라우드 환경이라고 봐도 무방하다.
+        - 고객마다 각각의 도메인을 분리하여 제공한다.
+    - 프로젝트 - 리소스 및 배포된 애플리케이션 격리
+    - 하나 이상의 오픈스택 ID 서비스 도메인에 속함
+    - 도메인 - 사용자, 프로젝트, 리소스 포함
+    - 여러 도메인 지원
+    - 직접 설치하지는 않지만 요구사항 이해 필요
+    - 클라우드 사용자 지원을 위한 경험 및 기본지식 필요
+
+- 도메인 운영자가 지원하는 다른 가상 사용자
+    - 애플리케이션 개발자
+        - 일반 사용자라 봐도 무방하다.
+        - 코드 개발자, 유지관리자, 기타 클라우드 사용자
+    - 프로젝트 소유자
+        - 도메인 운영자로부터 관리 권한 위임
+        - 프로젝트 별 사용자 및 역할 할당 관리
+
+- 가상 사용자 별 설명
+    - 프로젝트 소유자 : 애플리케이션의 개발 또는 유지관리를 관리할 책임이 있음.
+    - 인프라 아키텍트 : 분배된 Overcloud 배포 용량 및 구성 설계
+    - 도메인 관리자 : 리소스 할당, 사용자 액세스 및 배포 지원 관리
+    - 서비스 관리자 : 오픈스택 인프라 리소스 구성 요소를 구현, 지원 및 확장.
+
+### 인스턴스 시작
+- 대부분의 명령어는 `openstack`으로 시작
+- 일반적으로 `openstack <관리대상> <동작>`의 순서로 되어있음.
+- 인증을 마친 사용자에게 접근 권한을 부여하며, 인증에 필요한 값은 환경변수 or 매개변수로 제공(환경 변수 권장)
+- `cat <유저명>-finance-rc` 명령어로 사용자 정보를 확인할 수 있다.
+    - OS_USERNAME : 사용자 이름
+    - OS_PASSWORD : 패스워드
+    - OS_PROJECT_DOMAIN_NAME : 도메인이란 프로젝트와 사용자에 대한 상위 개념. 도메인을 여러개 사용하는 경우 지금의 프로젝트가 어느 도메인에 있는지에 대한 정보.
+    - OS_PROJECT_NAME : 프로젝트의 이름.
+    - OS_IMAGE_API_VERSION
+    - OS_IDENTITY_API_VERSION : 대부분 요즘은 3버전 사용. 2일 경우 도메인이라는 개념을 사용하지 않는다는 문제점이 있다. 또한 오픈스택도 리눅스와 마찬가지로 사용자와 그룹이 있는데 2에는 그룹이 없다.
+    - OS_AUTH_URL : 인증 서버의 주소. 사용자 이름, 패스워드 등을 어디를 통해 인증하겠다는 정보. 일반적으로 컨트롤러 노드에서 동작하므로 컨트롤러 노드의 ip주소와 동일.
+    
+- `source admin-rc` or `source <유저명>-finance-rc` 명령어로 접속하여 사용한다. 이 과정이 인증이며, 이 과정 없이 명령어를 사용하면 실행되지 않는다.
+- `openstack`이라고 입력하면 명령어에 대한 리스트를 확인할 수 있다.
