@@ -213,7 +213,7 @@
     - 오브젝트 저장소 서비스.
     - 오브젝트 스토리지 관리.
     - 수평적 확장과 이중화 제공을 위해 분산 구조 사용.
-    - 이미지 서비스의 스토리지 백엔드로 사용 가능
+    - 이미지 서비스의 스토리지 백엔드로 사용 가능.
     - 레드햇 오픈스택은 Ceph로 대체되어 사용.
 
 - Placement
@@ -344,4 +344,36 @@
 
 ### 프로젝트 네트워크 및 서브네트워크 생성
 
-### 비공용 인스터스 시작 및 확인
+- 오픈스택 테넌트 네트워크 설명
+    - 클라우드 사용자가 사용하는 가장 일반적인 네트워크 유형
+    - 테넌트 네트워크는 격리형으로 설계
+    - 독립적인 DHCP 제공 및 네트워크 격리로 IP주소 범위 중첩 허용
+
+- commands
+    - `openstack network create <network name>` : 네트워크 생성
+        - `--share` / `--no-share` : 서로다른 네트워크에서 공유 / 프로젝트 내에서만 사용. 기본값은 노 쉐어
+        - `--project <pj name>` : 프로젝트에 할당
+        - `--external` / `--internal` : 외부/내부. 기본값은 인터널.
+    - `openstack subnet create <subnet name>` : 서브넷 생성
+        - `--network <nt name>` : 어떤 네트워크에 대한 ip설정인지 설정.
+        - `--dhcp` / `--no-dhcp`
+        - `--subnet-range <subnet range>` : 네트워크 대역 설정
+        - `--allocation-pool` : 지정된 네트워크 대역 내에서 어디부터 어디까지 쓸 것인지 설정
+
+### 비공용 인스턴스 시작 및 확인
+
+- 인스턴스 시작
+    - 인스턴스 시작시 최소한의 리소스는 플레이버, 이미지, 네트워크.
+    - 프로젝트에 하나의 네트워크만 정의되어 있는 경우 해당 네트워크 자동 선택
+    - `openstack XXX list` / `openstack XXX show` 명령어로 가용 리소스 확인
+
+- 실행중인 인스턴스 확인
+    - 하나의 NIC가 있으면 동일한 프로젝트 내에서 접근 가능.
+    - 여러개의 NIC 구성 시 다양한 프로젝트 네트워크에서 접근 가능.
+    - 명령어 / 대시보드를 통한 상태 확인 및 VNC 콘솔을 이용한 접속으로 확인.
+        - `openstack console show`
+        - `openstack console url show`
+
+- commands
+    - `openstack server create <server name>`
+    - `openstack server delete <server name/id>`
