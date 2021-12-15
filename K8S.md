@@ -439,3 +439,5 @@ spec:
 - `kubectl get daemonsets`
 - `kubectl describe daemonsets/<DaemonSet 이름>`
 - `kubectl create deployment <DaemonSet name> (-n <namespace name>) --image=<image name> --dry-run=client -o yaml > <yaml file name>.yaml` 로 생성해서 yaml파일 얻을 것. create daemonset은 존재하지 않음.
+
+..
