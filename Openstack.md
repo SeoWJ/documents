@@ -489,3 +489,30 @@
         - Ceph에서만 가능하며 클러스터 인식이 되는 파일시스템만 가능
 
 ### 볼륨 및 스냅샷 관리
+
+- 볼륨 관리
+    - 클라우드 사용자는 볼륨 생성 및 인스턴스 연결 가능
+    - Ceph사용시 다중 연결 기능을 지원한다.
+    - 스냅샷 기능으로 볼륨 복제 및 복원 가능.
+    - 볼륨 전송
+        - 기본적으로는 하나의 프로젝트 내에서만 볼륨을 공유한다.
+        - 볼륨을 사용하지 않을때에 다른 사람에게 볼륨을 전송할 수 있다.(공유가 아닌 양도)
+        - 전송시 해당 사용자에게 ID & Key 전달.
+
+- commands
+    - `openstack server add volume <server name> <volume name>` : 서버에 볼륨 연결
+    - `openstack server remove volume <server name> <volume name>` : 서버에서 볼륨 분리
+    - `openstack volume delete <volume name>` : 볼륨 제거
+
+    - `openstack volume transfer request create <volume name>` : 전송의 ID 및 인증키를 생성하는 본 명령어를 사용하여 요청을 생성한 후 제공해야 함. 볼륨 상태가 "in-use"상태에서는 불가하다. server remove 명령어로 available상태로 변환시킨 후 수행해야 한다.
+    - `openstack volume transfer request accept --auth-key <auth key>` : 볼륨의 소유권 수락 명령어.
+
+    - `openstack volume snapshot create --volume <volume name> <snapshot name>` : 볼륨 스냅샷 생성
+        - `--force` : 인스턴스에 연결된 볼륨인 경우 추가해야하는 파라미터
+    - `openstack volume backup create --volume <volume name>` : 볼륨 백업 생성.
+    - `openstack volume snapshot list` : 스냅샷 리스트 확인.
+    - `openstack volume snapshot delete` : 스냅샷 제거.
+    
+
+
+## Chapter 6. 
