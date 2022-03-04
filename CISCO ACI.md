@@ -41,4 +41,47 @@
 		- 이더넷을 UDP/IP
 			- 이더넷에 VXLAN 헤더를 붙임.
 			- 이 헤더를 VXLAN ID라 부름.
-			- 
+			- ...
+
+### ACI Endpoint
+	- ACI Fabric을 통해 엔드포인트에 붙일 수 있는 종류
+		- BareMetal 서버
+			- Application 서버
+			- 이동하지 않는 서버
+			- 물리적 or VM
+		- VMM 제어기반의 가상머신
+			- Application 서버
+			- 이동가능 서버
+			- VMM 기반 
+				- VMM이란 VM Manager or VM Controller.
+				- VMWare의 vCS, Openstack, RedHat VMM 등
+				- 하이퍼바이저 기반의 서버를 중앙집중하는 컨트롤러
+				- K8S, Openshift
+		- External L2 Switch
+		- External L3 Router
+		- L4~L7 Appliance
+		- FCoE 스토리지
+		- FCoE 스위치
+	
+	- Ex) Internet - WEB서버 - FW - IPS - APP서버의 구조를 만든다 가정
+	- Tenent : 오버레이 상의 Network/App서비스 소유자
+		1) VRF(VxLAN간 라우팅) 생성 (VRF + L3 VxLAN)
+		2) Bridge Domain(BD) = L2 VxLAN 생성
+		3) Subnet
+		4) App Profile
+			- EPG(End Point Group)
+			- Contract
+				1. EPG내에서의 통신은 all permit.
+				2. EPG사이에 트래픽은 all deny.
+				- EPG사이의 L4~L7 서비스를 허용하는 정책을 정의
+				3. 서비스 방향(WEB <- APP)
+				
+### Access Policy
+	- Interface Policy 정의 -> Interface Policy Group으로 묶음 -> Interface Profile.
+	- interface profile에 포트번호가 들어간다.
+	
+	- Switch Policy 정의 -> Switch Policy Group으로 묶음 -> Switch Profile.
+	- Switch Profile에 switch Node번호와 Interface Profile이 들어간다.
+	
+	- 실제적으로 액세스 폴리시를 정의할 때 스위치 폴리시는 정의하지 않고 인터페이스 프로파일까지만 정의한다.
+	
